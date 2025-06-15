@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
 
 public class Gallery{
 
@@ -13,6 +12,7 @@ public class Gallery{
         Screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Screen.setBounds(0,0,800,500);
         Screen.setLocationRelativeTo(null);
+        Screen.setLayout(new FlowLayout());
 
         //Construindo botão
         chooser_button.setText("Selecionar foto");
