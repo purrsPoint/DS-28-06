@@ -42,8 +42,10 @@ public class principal {
         if(returnValue == JFileChooser.APPROVE_OPTION){
             File selectedFile = Open_ie.getSelectedFile();
 
-            JOptionPane
+            JOptionPane.showMessageDialog(null,"Arquivo selecionado"+ selectedFile.getAbsolutePath());
             
+        }else{
+            JOptionPane.showMessageDialog(null,"nenhma imagem selecionada");
         }
     }
 }
