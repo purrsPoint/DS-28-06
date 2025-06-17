@@ -1,6 +1,6 @@
 import javax.swing.*;
 
-public class Galeria extends JFrame{    
+class Galeria extends JFrame{    
 
     public void fazerTela(){
         // Cria a janela (JFrame)
