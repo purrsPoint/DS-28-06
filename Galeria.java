@@ -31,4 +31,16 @@ public class Galeria extends JFrame{
         setVisible(true);
 
     }
+
+    private OpenFile(){
+         int result = selectfile.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File arq = selectfile.getSelectedFile();
+            try (BufferedReader reader = new BufferedReader(new FileReader(arq))) {
+                text.read(reader, null);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Não foi possível abrir o arquivo: " + ex.getMessage());
+            }
+        }
+    }
 }
