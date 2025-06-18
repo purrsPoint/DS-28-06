@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
 class Main extends JFrame{    
 
@@ -37,7 +38,32 @@ class Main extends JFrame{
     }
 
     private void OpenFile(){
-         int result = selec_image.showOpenDialog(this);
+        selec_image.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (f.getName().endsWith(".jpg")) {
+                     return true;
+                }
+                if (f.getName().endsWith(".png")) {
+                 return true;   
+                }
+                if (f.getName().endsWith(".jpeg")) {
+                    return true;
+                }
+                if (f.getName().endsWith(".gif")) {
+                    return true;
+                }
+               
+               return false;
+            }
+
+            @Override
+            public String getDescription() {
+                return "Arquivos .jpg .jpeg .png .gif";
+            }
+            
+        });
+        int result = selec_image.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File arq = selec_image.getSelectedFile();
           
