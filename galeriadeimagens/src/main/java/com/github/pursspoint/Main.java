@@ -11,8 +11,8 @@ import javax.swing.filechooser.FileFilter;
 
 class Main extends JFrame{    
 
-    private JFileChooser selec_image;
-    private JButton b_selec_image;
+    private final JFileChooser selec_image;
+    private final JButton b_selec_image;
 
 
     public Main() {
@@ -20,8 +20,13 @@ class Main extends JFrame{
         b_selec_image.setSize(50, 50);
         b_selec_image.setText("Selecionar foto");
 
+        //cria um filechoorser e seleciona o diretorio onde aparece
         selec_image = new JFileChooser(); 
-        selec_image.setCurrentDirectory(new File("."));
+        selec_image.setCurrentDirectory(new File(""));
+
+        selec_image.setFileSelectionMode(JFileChooser.F);
+        
+        
         // Cria a janela (JFrame)
         this.setTitle("navegador de imagens");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,11 +41,14 @@ class Main extends JFrame{
 
 
     }
-
     private void OpenFile(){
+        
         selec_image.setFileFilter(new FileFilter() {
             @Override
             public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                }
                 if (f.getName().endsWith(".jpg")) {
                      return true;
                 }
