@@ -2,22 +2,19 @@ package com.github.pursspoint;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.image.BufferedImage;
-import java.awt.Component;
 import java.awt.Image;
-import java.awt.revalidate;
-import java.awt.repaint;
-
-import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.GridLayout;import java.awt.GridLayout;
 
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.ImageIcon;
+import javax.imageio.ImageIO;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -70,7 +67,7 @@ class Main extends JFrame{
 
         //cria o painel lateral que fica do lado
         painel_lateral = new JPanel();
-        painel_lateral.setLayout(new BoxLayout(painel_lateral, BoxLayout.Y_AXIS));
+        painel_lateral.setLayout(new GridLayout(0,1,0, 0x64));
 
         //cria onde fica o scroll lateral
         JScrollPane painel_escrolavel = new JScrollPane(painel_lateral);
@@ -139,12 +136,15 @@ class Main extends JFrame{
                     label.setAlignmentX(Component.CENTER_ALIGNMENT);
                     painel_lateral.add(label);
                     painel_lateral.add(Box.createRigidArea(new Dimension(0, 10))); 
+                }else{
+                    System.out.println("Nao deu "+arquivo.getName());
                 }
               }catch(IOException e){
-
+                e.printStackTrace();
               }
         }    
-        painel_lateral.revalidate():
+
+        painel_lateral.revalidate();
         painel_lateral.repaint();      
     }
  }
