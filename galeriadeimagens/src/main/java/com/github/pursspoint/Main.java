@@ -4,12 +4,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.io.File;
+import java.awt.image.BufferedImage;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.revalidate;
+import java.awt.repaint;
 
+import javax.imageio.ImageIO;
+
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.ImageIcon;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -23,6 +35,7 @@ class Main extends JFrame{
     
   
     public Main() {
+
         // Cria a janela (JFrame)
         this.setTitle("navegador de imagens");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,6 +81,7 @@ class Main extends JFrame{
         //adiciona itens
         this.getContentPane().add(painel_principal, BorderLayout.CENTER);       
         this.add(painel_escrolavel, BorderLayout.EAST);
+        
         //adiciona metodo ao botao
         b_selec_image.addActionListener(e->{OpenFile();});
     
@@ -91,7 +105,7 @@ class Main extends JFrame{
                 if (f.getName().endsWith(".jpeg")) {
                     return true;
                 }
-                if (f.getName().endsWith(".gif")) {
+                if(f.getName().endsWith(".gif")) {
                     return true;
                 }
                
@@ -104,13 +118,36 @@ class Main extends JFrame{
             }
             
         });
-        int result = selec_image.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File arq = selec_image.getSelectedFile();
-          
-        }
-    }
 
+       int resultado = selec_image.showOpenDialog(this);
+
+        if(resultado == JFileChooser.APPROVE_OPTION) {
+
+           
+            painel_lateral.removeAll();
+
+            File pasta = selec_image.getSelectedFile();
+            File[] arquivos = pasta.listFiles(); 
+          
+            for(File arquivo : arquivos){
+                try{    
+                BufferedImage imagem = ImageIO.read(arquivo);
+
+                if(imagem != null){
+                    ImageIcon icon = new ImageIcon(imagem.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+                    JLabel label = new JLabel(icon);
+                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    painel_lateral.add(label);
+                    painel_lateral.add(Box.createRigidArea(new Dimension(0, 10))); 
+                }
+              }catch(IOException e){
+
+              }
+        }    
+        painel_lateral.revalidate():
+        painel_lateral.repaint();      
+    }
+ }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(()->{
             Main tela = new Main();
@@ -118,3 +155,4 @@ class Main extends JFrame{
         });
     }
 }
+
