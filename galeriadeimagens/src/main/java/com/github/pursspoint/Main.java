@@ -7,13 +7,15 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.GridLayout;import java.awt.GridLayout;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.Box;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -22,137 +24,117 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
 
-class Main extends JFrame{    
+class Main extends JFrame {
 
     private final JFileChooser selec_image;
     private final JButton b_selec_image;
     private final JPanel painel_lateral;
-    
-  
-    public Main() {
 
-        // Cria a janela (JFrame)
+    public Main() {
         this.setTitle("navegador de imagens");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setBounds(0,0,800, 700); // largura x altura
+        this.setBounds(0, 0, 800, 700);
         this.setLayout(new BorderLayout());
 
-
-        //cria o painel principal da pagina 
-        JPanel  painel_principal = new JPanel();
+        JPanel painel_principal = new JPanel();
         painel_principal.setBackground(Color.gray);
         painel_principal.setLayout(new FlowLayout(FlowLayout.LEADING));
 
+        b_selec_image = new JButton("Selecionar foto");
+        b_selec_image.setPreferredSize(new Dimension(getWidth() / 2, 40));
 
+        selec_image = new JFileChooser();
+        selec_image.setCurrentDirectory(new File(System.getProperty("user.home")));
+        selec_image.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); // só pastas
 
-        //cria o botao
-        b_selec_image = new JButton();
-        b_selec_image.setPreferredSize(new Dimension(getWidth()/2,40));
-        b_selec_image.setText("Selecionar foto");
-
-      
-
-        //cria um filechoorser e seleciona o diretorio onde aparece
-        selec_image = new JFileChooser(); 
-        selec_image.setCurrentDirectory(new File(""));
-
-        selec_image.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        
-        //adiciona o botao ap painel prinicipal
         painel_principal.add(b_selec_image);
-        
-        
 
-        //cria o painel lateral que fica do lado
         painel_lateral = new JPanel();
-        painel_lateral.setLayout(new GridLayout(0,1,0, 0x64));
+        painel_lateral.setLayout(new GridLayout(0, 1, 0, 30));
 
-        //cria onde fica o scroll lateral
         JScrollPane painel_escrolavel = new JScrollPane(painel_lateral);
         painel_escrolavel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         painel_escrolavel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         painel_escrolavel.setPreferredSize(new Dimension(200, getHeight()));
+        painel_escrolavel.getVerticalScrollBar().setUnitIncrement(24);
 
-        //adiciona itens
-        this.getContentPane().add(painel_principal, BorderLayout.CENTER);       
+        this.getContentPane().add(painel_principal, BorderLayout.CENTER);
         this.add(painel_escrolavel, BorderLayout.EAST);
-        
-        //adiciona metodo ao botao
-        b_selec_image.addActionListener(e->{OpenFile();});
-    
 
-
-    }
-    private void OpenFile(){
-        
-        selec_image.setFileFilter(new FileFilter() {
-            @Override
-            public boolean accept(File f) {
-                if (f.isDirectory()) {
-                    return true;
-                }
-                if (f.getName().endsWith(".jpg")) {
-                     return true;
-                }
-                if (f.getName().endsWith(".png")) {
-                 return true;   
-                }
-                if (f.getName().endsWith(".jpeg")) {
-                    return true;
-                }
-                if(f.getName().endsWith(".gif")) {
-                    return true;
-                }
-               
-               return false;
-            }
-
-            @Override
-            public String getDescription() {
-                return "Arquivos .jpg .jpeg .png .gif";
-            }
-            
+        b_selec_image.addActionListener(e -> {
+            OpenFile();
         });
+    }
 
-       int resultado = selec_image.showOpenDialog(this);
+    private void OpenFile() {
+        int resultado = selec_image.showOpenDialog(this);
 
-        if(resultado == JFileChooser.APPROVE_OPTION) {
-
-           
+        if (resultado == JFileChooser.APPROVE_OPTION) {
             painel_lateral.removeAll();
 
             File pasta = selec_image.getSelectedFile();
-            File[] arquivos = pasta.listFiles(); 
-          
-            for(File arquivo : arquivos){
-                try{    
-                BufferedImage imagem = ImageIO.read(arquivo);
+            File[] arquivos = pasta.listFiles();
 
-                if(imagem != null){
-                    ImageIcon icon = new ImageIcon(imagem.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
-                    JLabel label = new JLabel(icon);
-                    label.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    painel_lateral.add(label);
-                    painel_lateral.add(Box.createRigidArea(new Dimension(0, 10))); 
-                }else{
-                    System.out.println("Nao deu "+arquivo.getName());
+            if (arquivos == null) {
+                System.out.println("Pasta vazia ou inacessível");
+                return;
+            }
+
+            for (File arquivo : arquivos) {
+                String nome = arquivo.getName().toLowerCase();
+                if (arquivo.isFile() && (nome.endsWith(".jpg") || nome.endsWith(".jpeg") || nome.endsWith(".png") || nome.endsWith(".gif"))) {
+                    try {
+                        BufferedImage imagem = ImageIO.read(arquivo);
+                        if (imagem != null) {
+                            JPanel painel_imagem = new JPanel();
+                            painel_imagem.setLayout(new BorderLayout());
+                            painel_imagem.setMaximumSize(new Dimension(150, 150));
+
+                            ImageIcon icon = new ImageIcon(imagem.getScaledInstance(150, 150, Image.SCALE_SMOOTH));
+                            JLabel label = new JLabel(icon);
+                            label.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                            JLabel nome_imagem = new JLabel(arquivo.getName(), JLabel.CENTER);
+                            nome_imagem.setFont(nome_imagem.getFont().deriveFont(10f));
+
+                            // Ao clicar na miniatura...
+                            label.addMouseListener(new MouseAdapter() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+                                    painel_principal.removeAll();
+
+                                    // Imagem central maior
+                                    ImageIcon iconFull = new ImageIcon(imagem.getScaledInstance(400, 400, Image.SCALE_SMOOTH));
+                                    JLabel fullLabel = new JLabel(iconFull, JLabel.CENTER);
+                                    painel_principal.setLayout(new BorderLayout());
+                                    painel_principal.add(fullLabel, BorderLayout.CENTER);
+
+                                    painel_principal.revalidate();
+                                    painel_principal.repaint();
+                                }
+                            });
+
+                            painel_imagem.add(label, BorderLayout.CENTER);
+                            painel_imagem.add(nome_imagem, BorderLayout.SOUTH);
+
+                            painel_lateral.add(painel_imagem);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-              }catch(IOException e){
-                e.printStackTrace();
-              }
-        }    
+            }
 
-        painel_lateral.revalidate();
-        painel_lateral.repaint();      
+            painel_lateral.revalidate();
+            painel_lateral.repaint();
+        }
     }
- }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(()->{
+        SwingUtilities.invokeLater(() -> {
             Main tela = new Main();
             tela.setVisible(true);
         });
     }
 }
-
