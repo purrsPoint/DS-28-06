@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -99,15 +100,19 @@ class Main extends JFrame {
                             System.out.println("Imagem nula:"+ arquivo.getAbsolutePath());
                         }
                         else{
-                            JPanel painel_imagem = new JPanel(new BorderLayout());
-                            painel_imagem.setMaximumSize(new Dimension(150, 150));
-
-
+                           
+                            
                             ImageIcon icon = new ImageIcon(imagem.getScaledInstance(150, 150, Image.SCALE_SMOOTH));
                             JLabel label = new JLabel(arquivo.getName(), icon,  JLabel.CENTER);
                             label.setFont(label.getFont().deriveFont(8f));
                             label.setHorizontalTextPosition(JLabel.CENTER);
                             label.setVerticalTextPosition(JLabel.BOTTOM);
+
+                            JPanel container = new JPanel(new BorderLayout());
+                            container.add(label,BorderLayout.CENTER);
+                            container.setPreferredSize(new Dimension(150,180));
+                            container.setMaximumSize(new Dimension(150,180));
+                            container.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 
                             label.addMouseListener(new MouseAdapter() {
@@ -117,8 +122,8 @@ class Main extends JFrame {
                                 }
                             });
                             
-                            painel_imagem.add(label);
-                            painel_lateral.add(painel_imagem);
+                            container.add(label);
+                            painel_lateral.add(container);
                         }
                     } catch (IOException e) {
 
