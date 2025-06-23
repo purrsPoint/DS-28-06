@@ -1,18 +1,16 @@
 package com.github.pursspoint;
 
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.GridLayout;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -39,6 +37,8 @@ class Main extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setBounds(0, 0, 800, 700);
         this.setLayout(new BorderLayout());
+        this.setResizable(false);
+
 
         // Painel principal com botão e área de visualização
         painel_principal = new JPanel(new BorderLayout());
@@ -95,16 +95,20 @@ class Main extends JFrame {
                 if (arquivo.isFile() && (nome.endsWith(".jpg") || nome.endsWith(".jpeg") || nome.endsWith(".png") || nome.endsWith(".gif"))) {
                     try {
                         BufferedImage imagem = ImageIO.read(arquivo);
-                        if (imagem != null) {
+                        if(imagem == null){
+                            System.out.println("Imagem nula:"+ arquivo.getAbsolutePath());
+                        }
+                        else{
                             JPanel painel_imagem = new JPanel(new BorderLayout());
                             painel_imagem.setMaximumSize(new Dimension(150, 150));
 
-                            ImageIcon icon = new ImageIcon(imagem.getScaledInstance(150, 150, Image.SCALE_SMOOTH));
-                            JLabel label = new JLabel(icon);
-                            label.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-                            JLabel nome_imagem = new JLabel(arquivo.getName(), JLabel.CENTER);
-                            nome_imagem.setFont(nome_imagem.getFont().deriveFont(10f));
+                            ImageIcon icon = new ImageIcon(imagem.getScaledInstance(150, 150, Image.SCALE_SMOOTH));
+                            JLabel label = new JLabel(arquivo.getName(), icon,  JLabel.CENTER);
+                            label.setFont(label.getFont().deriveFont(8f));
+                            label.setHorizontalTextPosition(JLabel.CENTER);
+                            label.setVerticalTextPosition(JLabel.BOTTOM);
+
 
                             label.addMouseListener(new MouseAdapter() {
                                 @Override
@@ -112,13 +116,12 @@ class Main extends JFrame {
                                     exibirImagemCentral(imagem);
                                 }
                             });
-
-                            painel_imagem.add(label, BorderLayout.CENTER);
-                            painel_imagem.add(nome_imagem, BorderLayout.SOUTH);
+                            
+                            painel_imagem.add(label);
                             painel_lateral.add(painel_imagem);
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+
                     }
                 }
             }
@@ -133,8 +136,8 @@ class Main extends JFrame {
 
         int largura = Math.min(imagem.getWidth(), 500);
         int altura = Math.min(imagem.getHeight(), 500);
-        ImageIcon iconFull = new ImageIcon(imagem.getScaledInstance(largura, altura, Image.SCALE_SMOOTH));
-        JLabel fullLabel = new JLabel(iconFull);
+        ImageIcon imagem_grande = new ImageIcon(imagem.getScaledInstance(largura, altura, Image.SCALE_SMOOTH));
+        JLabel fullLabel = new JLabel(imagem_grande);
         painel_visualizacao.add(fullLabel, new GridBagConstraints());
 
         painel_visualizacao.revalidate();
