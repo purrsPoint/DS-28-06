@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -16,6 +15,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -30,7 +30,7 @@ class Main extends JFrame {
     private final JFileChooser selec_image;
     private final JButton b_selec_image;
     private final JPanel painel_lateral;
-    private final JPanel painel_principal;
+    private JPanel painel_principal;
     private final JPanel painel_visualizacao;
 
     public Main() {
@@ -55,7 +55,7 @@ class Main extends JFrame {
 
         // Painel onde aparecerá a imagem centralizada
         painel_visualizacao = new JPanel(new GridBagLayout()); // Para centralizar
-        painel_visualizacao.setBackground(Color.gray);
+        painel_visualizacao.setBackground(Color.white);
         painel_principal.add(painel_visualizacao, BorderLayout.CENTER);
 
         // File chooser
@@ -64,11 +64,13 @@ class Main extends JFrame {
         selec_image.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         // Painel lateral com imagens pequenas
-        painel_lateral = new JPanel(new GridLayout(0, 1, 0, 30));
+        painel_lateral = new JPanel();
+        painel_lateral.setLayout(new BoxLayout(painel_lateral, BoxLayout.Y_AXIS));
+        painel_lateral.setBorder(BorderFactory.createEmptyBorder(5, 5, 5 ,5));
         JScrollPane painel_escrolavel = new JScrollPane(painel_lateral);
         painel_escrolavel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         painel_escrolavel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        painel_escrolavel.setPreferredSize(new Dimension(200, getHeight()));
+        painel_escrolavel.setPreferredSize(new Dimension(250, getHeight()));
         painel_escrolavel.getVerticalScrollBar().setUnitIncrement(24);
 
         this.getContentPane().add(painel_principal, BorderLayout.CENTER);
@@ -95,34 +97,42 @@ class Main extends JFrame {
                 String nome = arquivo.getName().toLowerCase();
                 if (arquivo.isFile() && (nome.endsWith(".jpg") || nome.endsWith(".jpeg") || nome.endsWith(".png") || nome.endsWith(".gif"))) {
                     try {
+
                         BufferedImage imagem = ImageIO.read(arquivo);
+
                         if(imagem == null){
-                            System.out.println("Imagem nula:"+ arquivo.getAbsolutePath());
+                            System.out.println("Imagem corrompida ou nula:"+ arquivo.getAbsolutePath());
                         }
                         else{
                            
                             
                             ImageIcon icon = new ImageIcon(imagem.getScaledInstance(150, 150, Image.SCALE_SMOOTH));
-                            JLabel label = new JLabel(arquivo.getName(), icon,  JLabel.CENTER);
-                            label.setFont(label.getFont().deriveFont(8f));
+                            JLabel icon_label = new JLabel(icon);
+                            icon_label.setPreferredSize(new Dimension(150   , 150));
+                            icon_label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+                            JLabel label = new JLabel(arquivo.getName(), JLabel.CENTER);
+                            label.setFont(label.getFont().deriveFont(10f));
                             label.setHorizontalTextPosition(JLabel.CENTER);
                             label.setVerticalTextPosition(JLabel.BOTTOM);
+                            label.setPreferredSize(new Dimension(150, 20));
 
                             JPanel container = new JPanel(new BorderLayout());
-                            container.add(label,BorderLayout.CENTER);
-                            container.setPreferredSize(new Dimension(150,180));
-                            container.setMaximumSize(new Dimension(150,180));
-                            container.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                            container.add(icon_label, BorderLayout.CENTER);
+                            container.add(label, BorderLayout.SOUTH);
+                            container.setPreferredSize(new Dimension(150,200));
+                            container.setMaximumSize(new Dimension(150,200));
+                            container.setBorder(BorderFactory.createEmptyBorder(15,2,15,2));
+                            
 
-
-                            label.addMouseListener(new MouseAdapter() {
+                            container.addMouseListener(new MouseAdapter() {
                                 @Override
                                 public void mouseClicked(MouseEvent e) {
                                     exibirImagemCentral(imagem);
                                 }
                             });
                             
-                            container.add(label);
+                            // container.add(label);
                             painel_lateral.add(container);
                         }
                     } catch (IOException e) {
