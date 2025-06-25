@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 class Main extends JFrame {
@@ -30,33 +31,67 @@ class Main extends JFrame {
     private final JFileChooser selec_image;
     private final JButton b_selec_image;
     private final JPanel painel_lateral;
-    private JPanel painel_principal;
+    private final JPanel painel_principal;
     private final JPanel painel_visualizacao;
+    private JTextArea nome_arq_area;
 
     public Main() {
         this.setTitle("navegador de imagens");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setBounds(0, 0, 800, 700);
+        this.setBounds(0, 0, 800, 500);
         this.setLayout(new BorderLayout());
         this.setResizable(false);
 
 
-        // Painel principal com botão e área de visualização
+        // Painel principal que comporta o botão o textarea e área de visualização
         painel_principal = new JPanel(new BorderLayout());
-        painel_principal.setBackground(Color.gray);
+        painel_principal.setBorder(BorderFactory.createLineBorder(Color.black,5));
+
+        //configura a area onde o caminho do arquivo fica
+        nome_arq_area = new JTextArea();
+        nome_arq_area.setText("");
+        nome_arq_area.setEditable(false);
+        nome_arq_area.setLineWrap(true);
+        nome_arq_area.setWrapStyleWord(true);
+        nome_arq_area.setBackground(Color.white);
+        nome_arq_area.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        nome_arq_area.setPreferredSize(new Dimension(300, 20));
 
         // Painel do botão
         JPanel painel_topo = new JPanel(new BorderLayout());
         b_selec_image = new JButton("Selecionar pasta");
         b_selec_image.setPreferredSize(new Dimension(0, 40));
+        b_selec_image.setBackground(Color.BLACK);
+        b_selec_image.setForeground(Color.WHITE);
+        b_selec_image.setFocusPainted(false);
+        b_selec_image.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+        
+        b_selec_image.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e){
+                b_selec_image.setBackground(Color.WHITE);
+                b_selec_image.setForeground(Color.BLACK);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e){
+                b_selec_image.setBackground(Color.BLACK);
+                b_selec_image.setForeground(Color.WHITE);
+            }
+        });
         painel_topo.add(b_selec_image, BorderLayout.CENTER);
 
         painel_principal.add(painel_topo, BorderLayout.NORTH);
-
+    
+        
         // Painel onde aparecerá a imagem centralizada
-        painel_visualizacao = new JPanel(new GridBagLayout()); // Para centralizar
+        painel_visualizacao = new JPanel(new GridBagLayout()); // layout de grid flexivel
         painel_visualizacao.setBackground(Color.white);
+
+
         painel_principal.add(painel_visualizacao, BorderLayout.CENTER);
+        painel_principal.add(nome_arq_area,BorderLayout.SOUTH);
 
         // File chooser
         selec_image = new JFileChooser();
@@ -67,6 +102,7 @@ class Main extends JFrame {
         painel_lateral = new JPanel();
         painel_lateral.setLayout(new BoxLayout(painel_lateral, BoxLayout.Y_AXIS));
         painel_lateral.setBorder(BorderFactory.createEmptyBorder(5, 5, 5 ,5));
+
         JScrollPane painel_escrolavel = new JScrollPane(painel_lateral);
         painel_escrolavel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         painel_escrolavel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -77,13 +113,25 @@ class Main extends JFrame {
         this.add(painel_escrolavel, BorderLayout.EAST);
 
         b_selec_image.addActionListener(e -> OpenFile());
+
     }
 
     private void OpenFile() {
+        
         int resultado = selec_image.showOpenDialog(this);
 
         if (resultado == JFileChooser.APPROVE_OPTION) {
             painel_lateral.removeAll();
+            painel_visualizacao.removeAll();
+            nome_arq_area.removeAll();
+
+
+            painel_visualizacao.revalidate();
+            painel_visualizacao.repaint();
+
+            //atualiza a area do caminho
+            nome_arq_area.revalidate();
+            nome_arq_area.repaint();
 
             File pasta = selec_image.getSelectedFile();
             File[] arquivos = pasta.listFiles();
@@ -92,6 +140,7 @@ class Main extends JFrame {
                 System.out.println("Pasta vazia ou inacessível");
                 return;
             }
+
 
             for (File arquivo : arquivos) {
                 String nome = arquivo.getName().toLowerCase();
@@ -104,7 +153,6 @@ class Main extends JFrame {
                             System.out.println("Imagem corrompida ou nula:"+ arquivo.getAbsolutePath());
                         }
                         else{
-                           
                             
                             ImageIcon icon = new ImageIcon(imagem.getScaledInstance(150, 150, Image.SCALE_SMOOTH));
                             JLabel icon_label = new JLabel(icon);
@@ -128,7 +176,8 @@ class Main extends JFrame {
                             container.addMouseListener(new MouseAdapter() {
                                 @Override
                                 public void mouseClicked(MouseEvent e) {
-                                    exibirImagemCentral(imagem);
+                                    exibirImagemCentral(imagem, arquivo);
+                                    
                                 }
                             });
                             
@@ -146,17 +195,25 @@ class Main extends JFrame {
         }
     }
 
-    private void exibirImagemCentral(BufferedImage imagem) {
+    private void exibirImagemCentral(BufferedImage imagem, File arquivo) {
         painel_visualizacao.removeAll();
 
-        int largura = Math.min(imagem.getWidth(), 500);
-        int altura = Math.min(imagem.getHeight(), 500);
+        int largura = Math.min(imagem.getWidth(), 300);
+        int altura = Math.min(imagem.getHeight(), 300);
         ImageIcon imagem_grande = new ImageIcon(imagem.getScaledInstance(largura, altura, Image.SCALE_SMOOTH));
         JLabel fullLabel = new JLabel(imagem_grande);
+
+        nome_arq_area.setText(arquivo.getAbsolutePath());
+
+
         painel_visualizacao.add(fullLabel, new GridBagConstraints());
+
+
+   
 
         painel_visualizacao.revalidate();
         painel_visualizacao.repaint();
+
     }
 
     public static void main(String[] args) {
