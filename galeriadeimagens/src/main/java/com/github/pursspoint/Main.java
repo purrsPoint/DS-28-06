@@ -33,7 +33,7 @@ class Main extends JFrame {
     private final JPanel painel_lateral;
     private final JPanel painel_principal;
     private final JPanel painel_visualizacao;
-    private JTextArea nome_arq_area;
+    private final JTextArea nome_arq_area;
 
     public Main() {
         this.setTitle("navegador de imagens");
