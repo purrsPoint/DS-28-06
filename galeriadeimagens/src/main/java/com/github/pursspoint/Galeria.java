@@ -40,6 +40,7 @@ class Galeria extends JFrame {
         this.setBounds(0, 0, 800, 500);
         this.setLayout(new BorderLayout());
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
 
         // Painel principal que comporta o botão o textarea e área de visualização
         painel_principal = new JPanel(new BorderLayout());
@@ -114,8 +115,6 @@ class Galeria extends JFrame {
         this.getContentPane().add(painel_principal, BorderLayout.CENTER);
         this.add(painel_escrolavel, BorderLayout.EAST);
 
-
-
         b_selec_image.addActionListener(e -> OpenFile());
 
     }
@@ -158,11 +157,13 @@ class Galeria extends JFrame {
                         }
                         else{
                             
+                            //miniatura da imagem
                             ImageIcon icon = new ImageIcon(imagem.getScaledInstance(150, 150, Image.SCALE_SMOOTH));
                             JLabel icon_label = new JLabel(icon);
                             icon_label.setPreferredSize(new Dimension(150 , 150));
                             icon_label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
+                            //nome do arquivo
                             JLabel label = new JLabel(arquivo.getName(), JLabel.CENTER);
                             label.setFont(label.getFont().deriveFont(10f));
                             label.setHorizontalTextPosition(JLabel.CENTER);
