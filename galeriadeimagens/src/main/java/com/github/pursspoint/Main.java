@@ -4,8 +4,6 @@ package com.github.pursspoint;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,7 +26,7 @@ import javax.swing.SwingUtilities;
 
 class Main extends JFrame {
 
-    private final JFileChooser selec_image;
+    private JFileChooser selec_image;
     private final JButton b_selec_image;
     private final JPanel painel_lateral;
     private final JPanel painel_principal;
@@ -59,6 +57,8 @@ class Main extends JFrame {
 
         // Painel do botão
         JPanel painel_topo = new JPanel(new BorderLayout());
+
+        // Criando o botao
         b_selec_image = new JButton("Selecionar pasta");
         b_selec_image.setPreferredSize(new Dimension(0, 40));
         b_selec_image.setBackground(Color.BLACK);
@@ -80,13 +80,14 @@ class Main extends JFrame {
                 b_selec_image.setForeground(Color.WHITE);
             }
         });
+
         painel_topo.add(b_selec_image, BorderLayout.CENTER);
 
         painel_principal.add(painel_topo, BorderLayout.NORTH);
     
         
         // Painel onde aparecerá a imagem centralizada
-        painel_visualizacao = new JPanel(new GridBagLayout()); // layout de grid flexivel
+        painel_visualizacao = new JPanel(new BorderLayout());
         painel_visualizacao.setBackground(Color.white);
 
 
@@ -123,7 +124,7 @@ class Main extends JFrame {
         if (resultado == JFileChooser.APPROVE_OPTION) {
             painel_lateral.removeAll();
             painel_visualizacao.removeAll();
-            nome_arq_area.removeAll();
+            nome_arq_area.setText("");
 
 
             painel_visualizacao.revalidate();
@@ -156,7 +157,7 @@ class Main extends JFrame {
                             
                             ImageIcon icon = new ImageIcon(imagem.getScaledInstance(150, 150, Image.SCALE_SMOOTH));
                             JLabel icon_label = new JLabel(icon);
-                            icon_label.setPreferredSize(new Dimension(150   , 150));
+                            icon_label.setPreferredSize(new Dimension(150 , 150));
                             icon_label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
                             JLabel label = new JLabel(arquivo.getName(), JLabel.CENTER);
@@ -181,7 +182,6 @@ class Main extends JFrame {
                                 }
                             });
                             
-                            // container.add(label);
                             painel_lateral.add(container);
                         }
                     } catch (IOException e) {
@@ -206,10 +206,7 @@ class Main extends JFrame {
         nome_arq_area.setText(arquivo.getAbsolutePath());
 
 
-        painel_visualizacao.add(fullLabel, new GridBagConstraints());
-
-
-   
+        painel_visualizacao.add(fullLabel, BorderLayout.CENTER);
 
         painel_visualizacao.revalidate();
         painel_visualizacao.repaint();
