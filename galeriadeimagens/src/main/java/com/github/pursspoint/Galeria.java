@@ -22,24 +22,24 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 
-class Main extends JFrame {
+class Galeria extends JFrame {
 
-    private JFileChooser selec_image;
+    private final JFileChooser selec_image;
     private final JButton b_selec_image;
     private final JPanel painel_lateral;
     private final JPanel painel_principal;
     private final JPanel painel_visualizacao;
     private final JTextArea nome_arq_area;
 
-    public Main() {
+    public Galeria() {
+
+        //configura o JFrame
         this.setTitle("navegador de imagens");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setBounds(0, 0, 800, 500);
         this.setLayout(new BorderLayout());
         this.setResizable(false);
-
 
         // Painel principal que comporta o botão o textarea e área de visualização
         painel_principal = new JPanel(new BorderLayout());
@@ -82,18 +82,17 @@ class Main extends JFrame {
         });
 
         painel_topo.add(b_selec_image, BorderLayout.CENTER);
-
-        painel_principal.add(painel_topo, BorderLayout.NORTH);
     
         
         // Painel onde aparecerá a imagem centralizada
         painel_visualizacao = new JPanel(new BorderLayout());
         painel_visualizacao.setBackground(Color.white);
 
-
+        //adiciona os itens do painel principal
         painel_principal.add(painel_visualizacao, BorderLayout.CENTER);
         painel_principal.add(nome_arq_area,BorderLayout.SOUTH);
-
+        painel_principal.add(painel_topo, BorderLayout.NORTH);
+        
         // File chooser
         selec_image = new JFileChooser();
         selec_image.setCurrentDirectory(new File(System.getProperty("user.home")));
@@ -104,14 +103,18 @@ class Main extends JFrame {
         painel_lateral.setLayout(new BoxLayout(painel_lateral, BoxLayout.Y_AXIS));
         painel_lateral.setBorder(BorderFactory.createEmptyBorder(5, 5, 5 ,5));
 
+        //faz o painel_lateral ser escrolavel
         JScrollPane painel_escrolavel = new JScrollPane(painel_lateral);
         painel_escrolavel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         painel_escrolavel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         painel_escrolavel.setPreferredSize(new Dimension(250, getHeight()));
         painel_escrolavel.getVerticalScrollBar().setUnitIncrement(24);
 
+        //adiciona os componentes principais
         this.getContentPane().add(painel_principal, BorderLayout.CENTER);
         this.add(painel_escrolavel, BorderLayout.EAST);
+
+
 
         b_selec_image.addActionListener(e -> OpenFile());
 
@@ -126,7 +129,7 @@ class Main extends JFrame {
             painel_visualizacao.removeAll();
             nome_arq_area.setText("");
 
-
+            //atualiza o painel onde a imagem aumentada fica
             painel_visualizacao.revalidate();
             painel_visualizacao.repaint();
 
@@ -177,7 +180,7 @@ class Main extends JFrame {
                             container.addMouseListener(new MouseAdapter() {
                                 @Override
                                 public void mouseClicked(MouseEvent e) {
-                                    exibirImagemCentral(imagem, arquivo);
+                                    exibirImagem(imagem, arquivo);
                                     
                                 }
                             });
@@ -195,11 +198,11 @@ class Main extends JFrame {
         }
     }
 
-    private void exibirImagemCentral(BufferedImage imagem, File arquivo) {
+    private void exibirImagem(BufferedImage imagem, File arquivo) {
         painel_visualizacao.removeAll();
 
-        int largura = Math.min(imagem.getWidth(), 300);
-        int altura = Math.min(imagem.getHeight(), 300);
+        int largura = Math.min(imagem.getWidth(), 350);
+        int altura = Math.min(imagem.getHeight(), 350);
         ImageIcon imagem_grande = new ImageIcon(imagem.getScaledInstance(largura, altura, Image.SCALE_SMOOTH));
         JLabel fullLabel = new JLabel(imagem_grande);
 
@@ -214,9 +217,9 @@ class Main extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Main tela = new Main();
+   
+            Galeria tela = new Galeria();
             tela.setVisible(true);
-        });
+   
     }
 }
